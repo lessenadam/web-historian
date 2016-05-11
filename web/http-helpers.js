@@ -1,6 +1,7 @@
 var path = require('path');
 var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
+var dir = archive.paths;
 
 exports.headers = {
   'access-control-allow-origin': '*',
@@ -14,8 +15,28 @@ exports.serveAssets = function(res, asset, callback) {
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...),
   // css, or anything that doesn't change often.)
+  fs.readFile(asset, function(err, data) {
+    if (err) {
+      console.log('ERROR1--------', err);
+      res.writeHead(404);
+      res.write("Not Found!");
+    } else {
+      res.writeHead(200, exports.headers);
+      res.write(data);
+    }
+    res.end();
+  });
 };
 
-
+exports.writeAssets = function(res, message, callback) {
+  fs.appendFile(dir.list, message, 'utf8', err => {
+    if (err) {
+      throw err;
+    }
+    console.log('Data was successfully added!');
+  });
+  res.writeHead(302, exports.headers);
+  res.end();
+};
 
 // As you progress, keep thinking about what helper functions you can put here!
