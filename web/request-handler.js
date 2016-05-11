@@ -25,11 +25,9 @@ exports.handleRequest = function (req, res) {
 
     req.on('end', function () {
       var post = body;
-      console.log('post is---------', post);
       var postURL = post.slice(4);
       console.log('postURL is---------', postURL);
-      console.log('typeof postURL is---------', typeof postURL);
-      webs.writeAssets(res, postURL);
+      webs.writeAssets(res, postURL + '\n');
     });
 
 
