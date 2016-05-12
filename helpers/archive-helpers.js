@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-
+var http = require('http');
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -64,14 +64,48 @@ exports.isUrlArchived = function(target, cb) {
 };
 
 
-fs.access('/etc/passwd', fs.R_OK | fs.W_OK, (err) => {
-  console.log(err ? 'no access!' : 'can read/write');
-});
+exports.downloadUrls = function(array) {
+  //loop array 
+  _.each(array, function(url) {
+    exports.isUrlArchived(url, function(alreadyArchived) {
+      if (!alreadyArchived) {
+        // code for url request 
+        var options = {
+          host: url
+        };
 
+        var callback = function(response) {
+          var str = '';
 
+          //another chunk of data has been recieved, so append it to `str`
+          response.on('data', function (chunk) {
+            str += chunk;
+          });
 
+          //the whole response has been recieved, so we just print it out here
+          response.on('end', function () {
+            // console.log(str);
+            fs.appendFile(exports.paths.archivedSites + '/' + url, str, 'utf8', err => {
+              if (err) {
+                throw err;
+              }
+              console.log('New file added to the archives!');
+            });
+          });
+        };
 
+        http.request(options, callback).end();
 
+      }
+    });
+  });
+    // call is UrlArchived
+      // if not archived, execute script to go get 
+      // else do nothing 
 
-exports.downloadUrls = function() {
 };
+
+
+
+
+
