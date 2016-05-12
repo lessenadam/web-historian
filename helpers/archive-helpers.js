@@ -36,14 +36,42 @@ exports.readListOfUrls = function(cb) {
   });
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(target, cb) {
+  console.log(cb);  
+  exports.readListOfUrls(function(urls) {
+    var found = false;
+    _.each(urls, function(url) {
+      if (url === target) {
+        found = true;
+      }
+    });
+    cb(found);  
+  });
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(newURL, cb) {
+  fs.appendFile(exports.paths.list, newURL, 'utf8', err => {
+    if (err) {
+      throw err;
+    }
+    console.log('Data was successfully added!');
+    cb();
+  });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(target, cb) {
+  fs.access(exports.paths.archivedSites + '/' + target, fs.F_OK, err => cb(err ? false : true));
 };
+
+
+fs.access('/etc/passwd', fs.R_OK | fs.W_OK, (err) => {
+  console.log(err ? 'no access!' : 'can read/write');
+});
+
+
+
+
+
 
 exports.downloadUrls = function() {
 };
