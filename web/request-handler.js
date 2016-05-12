@@ -12,19 +12,12 @@ exports.handleRequest = function (req, res) {
 
   if (url === '/' && method === 'GET') {
     webs.serveAssets(res, dir.siteAssets + '/index.html');
-  } else if (method === 'GET') {
+
+  } else if (url === '/styles.css' && method === 'GET') {
     // if (url.indexOf('css') > 0) {
-    fs.readFile(dir.siteAssets + url, function(err, data) {
-      if (err) {
-        console.log('ERROR1--------', err);
-        res.writeHead(404, exports.headers);
-        res.write('File not found');
-      } else {
-        res.writeHead(200, {'Content-Type':'text/css'});
-        res.write(data);
-      }
-      res.end();
-    });
+    console.log('SERVIING CSS!!!!!!!!!!!!!!!!!!');
+    webs.serveAssets(res, dir.siteAssets + url);
+
   } else if (method === 'POST') {
     var body = '';
 
