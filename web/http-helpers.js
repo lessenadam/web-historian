@@ -15,28 +15,34 @@ exports.serveAssets = function(res, asset, callback) {
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...),
   // css, or anything that doesn't change often.)
+  console.log('ASSET IS ===========', asset);
+
   fs.readFile(asset, function(err, data) {
     if (err) {
-      console.log('ERROR1--------', err);
-      res.writeHead(404);
-      res.write("Not Found!");
+      console.log('ERROR1');
+      exports.serveAssets(res, dir.siteAssets + '/loading.html');
     } else {
       res.writeHead(200, exports.headers);
       res.write(data);
+      res.end();
     }
-    res.end();
   });
 };
 
 exports.writeAssets = function(res, message, callback) {
-  fs.appendFile(dir.list, message, 'utf8', err => {
-    if (err) {
-      throw err;
+  archive.isUrlInList(message, function(inList) {
+    if (!inList) {
+      fs.appendFile(dir.list, message + '\n', 'utf8', err => {
+        if (err) {
+          console.log('ERRR2--------', err);
+        }
+        console.log('Data was successfully added!');
+      }); 
     }
-    console.log('Data was successfully added!');
   });
-  res.writeHead(302, exports.headers);
-  res.end();
+  
+  exports.serveAssets(res, dir.archivedSites + '/' + message);
+
 };
 
 // As you progress, keep thinking about what helper functions you can put here!

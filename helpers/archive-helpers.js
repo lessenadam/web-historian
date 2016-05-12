@@ -67,37 +67,39 @@ exports.isUrlArchived = function(target, cb) {
 exports.downloadUrls = function(array) {
   //loop array 
   _.each(array, function(url) {
-    exports.isUrlArchived(url, function(alreadyArchived) {
-      if (!alreadyArchived) {
-        // code for url request 
-        var options = {
-          host: url
-        };
+    if (url.length > 0) {
+      exports.isUrlArchived(url, function(alreadyArchived) {
+        if (!alreadyArchived) {
+          // code for url request 
+          console.log('FOUND A SITE TO INDEX-------------', url);
+          var options = {
+            host: url
+          };
 
-        var callback = function(response) {
-          var str = '';
+          var callback = function(response) {
+            var str = '';
 
-          //another chunk of data has been recieved, so append it to `str`
-          response.on('data', function (chunk) {
-            str += chunk;
-          });
-
-          //the whole response has been recieved, so we just print it out here
-          response.on('end', function () {
-            // console.log(str);
-            fs.appendFile(exports.paths.archivedSites + '/' + url, str, 'utf8', err => {
-              if (err) {
-                throw err;
-              }
-              console.log('New file added to the archives!');
+            //another chunk of data has been recieved, so append it to `str`
+            response.on('data', function (chunk) {
+              str += chunk;
             });
-          });
-        };
 
-        http.request(options, callback).end();
+            //the whole response has been recieved, so we just print it out here
+            response.on('end', function () {
+              // console.log(str);
+              fs.appendFile(exports.paths.archivedSites + '/' + url, str, 'utf8', err => {
+                if (err) {
+                  throw err;
+                }
+                console.log('New file added to the archives!');
+              });
+            });
+          };
 
-      }
-    });
+          http.request(options, callback).end();
+        }
+      });
+    }
   });
     // call is UrlArchived
       // if not archived, execute script to go get 
